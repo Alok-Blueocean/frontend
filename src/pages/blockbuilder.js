@@ -5,6 +5,7 @@ import QABlock from '../componants/QABlock/qablock';
 // import ReactPaginate from 'react-paginate';
 import Pagination from "../lib/Pagination";
 // import axios from 'axios'
+import Accordion from 'react-bootstrap/Accordion'
 
 class BlockBuilder extends Component {
     // constructor(props) {
@@ -12,7 +13,7 @@ class BlockBuilder extends Component {
     //     this.state = {...}
     // }
     state = {
-        questionblock: [
+        question_answer_block: [
             // {
         //     question:'what is the meaning of this verse',
         //     answer:'answer1'
@@ -40,7 +41,8 @@ class BlockBuilder extends Component {
         // .then(questionList => {
         //     this.setState({ questionblock: questionList['results'] });
         // });
-        this.receivedData(this.state.offset)
+        const id = this.props.match.params.theme_id
+        this.receivedData(id)
     }
     // URL = `http://localhost:8000/questions?offset=${offset}`;
 
@@ -62,13 +64,13 @@ class BlockBuilder extends Component {
         );
     };
 
-    receivedData() {
+    receivedData(id) {
         const offset = this.state.offset
-        fetch(`http://localhost:8000/questions?offset=${offset}`)
+        fetch(`http://localhost:8000/theme/${id}/question?offset=${offset}`)
             .then((response) => response.json())
             .then(questionList => {
                 this.setState({ pageCount: Math.ceil(questionList['count'] / this.state.perPage)});
-                this.setState({ questionblock: questionList['results'] });
+                this.setState({ question_answer_block: questionList['results'] });
             });
     }
     
@@ -107,14 +109,15 @@ class BlockBuilder extends Component {
         
         return (
             <Aux>
-               {this.state.questionblock.map((item, index) =>(
+                <Accordion defaultActiveKey="0">
+               {this.state.question_answer_block.map((item, index) =>(
                     <QABlock blogs={item}
                       activelist={this.state.activeList} 
                       toggleanswer={()=>this.toggleshowanswer(item.question_id)} 
                       key={item.question_id}
                       />
                 ))}
-                
+                </Accordion>
                 {/* <div>
               <ReactPaginate
                   previousLabel={"prev"}
